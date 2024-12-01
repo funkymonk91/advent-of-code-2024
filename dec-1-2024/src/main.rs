@@ -1,81 +1,54 @@
-use std::fs;
+use common::{read_input, time};
 
 fn main() {
-    // part1();
-    part2();
+    let (left, right) = parse_input("src/input.txt");
+
+    println!("Historian Hysteria");
+    println!("------------------");
+
+    // Pass references directly
+    let (duration, result) = time(|| part1(&left, &right));
+    println!("Part 1 result: {} (computed in {:?})", result, duration);
+
+    let (duration, result) = time(|| part2(&left, &right));
+    println!("Part 2 result: {} (computed in {:?})", result, duration);
+    println!();
 }
 
-fn part1() {
-    // let file_path = "src/exampleInput.txt";
-    let file_path = "src/input.txt";
-    let contents = fs::read_to_string(file_path)
-        .expect("Something went wrong reading the file");
-
-    let file_lines: Vec<_> = contents.lines().collect();
-
+fn parse_input(input: &str) -> (Vec<u32>, Vec<u32>) {
     let mut left_numbers: Vec<u32> = Vec::new();
     let mut right_numbers: Vec<u32> = Vec::new();
-    let mut deltas: Vec<u32> = Vec::new();
-    
-    for line in &file_lines {
-        let parts: Vec<&str> = line.split_whitespace().collect();
 
-        left_numbers.push(parts[0].parse::<u32>().unwrap());
-        right_numbers.push(parts[1].parse::<u32>().unwrap());
-    }
+    read_input(input)
+        .lines()
+        .for_each(|line| {
+            let parts: Vec<&str> = line.split_whitespace().collect();
 
-    // sort the left and right numbers from low to high
+            left_numbers.push(parts[0].parse::<u32>().unwrap());
+            right_numbers.push(parts[1].parse::<u32>().unwrap());
+        });
+
     left_numbers.sort();
     right_numbers.sort();
 
-    for i in 0..left_numbers.len() {
-        if left_numbers[i] > right_numbers[i] {
-            deltas.push(left_numbers[i] - right_numbers[i]);
-        } else {
-            deltas.push(right_numbers[i] - left_numbers[i]);
-        }
-
-        println!("Left: {}, Right: {}, Delta: {}", left_numbers[i], right_numbers[i], deltas[i]);
-    }
-
-    let deltas_sum: u32 = deltas.iter().sum();
-    println!("Sum of deltas: {}", deltas_sum);
+    (left_numbers, right_numbers)
 }
 
-fn part2() {
-    // let file_path = "src/exampleInput.txt";
-    let file_path = "src/input.txt";
-    let contents = fs::read_to_string(file_path)
-        .expect("Something went wrong reading the file");
+fn part1(left: &[u32], right: &[u32]) -> u32 {
+    left.iter()
+        .zip(right.iter())
+        .map(|(l, r)| l.abs_diff(*r))
+        .sum()
+}
 
-    let file_lines: Vec<_> = contents.lines().collect();
-
-    let mut left_numbers: Vec<u32> = Vec::new();
-    let mut right_numbers: Vec<u32> = Vec::new();
-    let mut similarity_scores: Vec<u32> = Vec::new();
-
-    for line in &file_lines {
-        let parts: Vec<&str> = line.split_whitespace().collect();
-
-        left_numbers.push(parts[0].parse::<u32>().unwrap());
-        right_numbers.push(parts[1].parse::<u32>().unwrap());
-    }
-
-    for (i, &left) in left_numbers.iter().enumerate() {
-        let mut count: u32 = 0;
-
-        for (j, &right) in right_numbers.iter().enumerate() {
-            if left == right {
-                count += 1;
-            }
-        }
-
-        let score: u32 = left * count;
-
-        similarity_scores.push(score);
-
-        println!("Left: {}, Count: {},  Score: {}", left, count, score);
-        
-    }
-    println!("Sum of similarity scores: {}", similarity_scores.iter().sum::<u32>());
+fn part2(left: &[u32], right: &[u32]) -> u32 {
+    left.iter()
+        .map(|&l| {
+            let count = right.iter()
+                .filter(|&&r| l == r)
+                .count() as u32;
+            
+            l * count
+        })
+        .sum()
 }
