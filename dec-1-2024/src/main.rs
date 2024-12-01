@@ -61,9 +61,6 @@ fn part2() {
         right_numbers.push(parts[1].parse::<u32>().unwrap());
     }
 
-    // remove duplicates from the left numbers
-    // left_numbers.sort();
-
     for (i, &left) in left_numbers.iter().enumerate() {
         let mut count: u32 = 0;
 
