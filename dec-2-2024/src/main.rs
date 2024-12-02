@@ -25,41 +25,31 @@ fn part1(input: &String) -> u32 {
 }
 
 fn part2(input: &String) -> u32 {   
-    let mut unsafe_reports: Vec<&str> = Vec::new();
-    let initial_count = input.lines().map(|report| {
-        let is_safe = is_report_safe(report);
+    let unsafe_reports: Vec<_> = input
+        .lines()
+        .filter(|&report| !is_report_safe(report))
+        .collect();
 
-        if(!is_safe) {
-            unsafe_reports.push(report);
-        }
+    let initial_count = (input.lines().count() - unsafe_reports.len()) as u32;
 
-        is_safe
-    })
-        .filter(|&safe| safe)
-        .count() as u32;
 
     let mut tolerated_unsafe_reports = 0;
 
-    unsafe_reports.iter().for_each(|report| {
-        // try removing the first element, then the second, then the third, and check if the report is safe
-        let levels: Vec<&str> = report.split_whitespace().collect();
+    let tolerated_unsafe_reports = unsafe_reports.iter().filter(|&&report| {
+        // Split the report into levels and try removing each one to check safety
+        let levels: Vec<_> = report.split_whitespace().collect();
 
-        for i in 0..levels.len() {
-            // remove the element at index i
-            let mut new_report = String::new();
-            for j in 0..levels.len() {
-                if j != i {
-                    new_report.push_str(levels[j]);
-                    new_report.push(' ');
-                }
-            }
+        levels.iter().enumerate().any(|(i, _)| {
+            let new_report: String = levels.iter()
+                .enumerate()
+                .filter(|&(j, _)| j != i)
+                .map(|(_, &level)| level)
+                .collect::<Vec<_>>()
+                .join(" ");
 
-            if is_report_safe(&new_report) {
-                tolerated_unsafe_reports += 1;
-                break;
-            }
-        }
-    });
+            is_report_safe(&new_report)
+        })
+    }).count() as u32;
 
     initial_count + tolerated_unsafe_reports
 }
