@@ -11,9 +11,9 @@ fn main() {
     let (duration, result) = time(|| part1(&input));
     println!("Part 1 result: {} (computed in {:?})", result, duration);
 
-    // let (duration, result) = time(|| part2(&left, &right));
-    // println!("Part 2 result: {} (computed in {:?})", result, duration);
-    // println!();
+    let (duration, result) = time(|| part2(&input));
+    println!("Part 2 result: {} (computed in {:?})", result, duration);
+    println!();
 }
 
 fn part1(input: &String) -> u32 {
@@ -24,6 +24,45 @@ fn part1(input: &String) -> u32 {
     .count() as u32
 }
 
+fn part2(input: &String) -> u32 {   
+    let mut unsafe_reports: Vec<&str> = Vec::new();
+    let initial_count = input.lines().map(|report| {
+        let is_safe = is_report_safe(report);
+
+        if(!is_safe) {
+            unsafe_reports.push(report);
+        }
+
+        is_safe
+    })
+        .filter(|&safe| safe)
+        .count() as u32;
+
+    let mut tolerated_unsafe_reports = 0;
+
+    unsafe_reports.iter().for_each(|report| {
+        // try removing the first element, then the second, then the third, and check if the report is safe
+        let levels: Vec<&str> = report.split_whitespace().collect();
+
+        for i in 0..levels.len() {
+            // remove the element at index i
+            let mut new_report = String::new();
+            for j in 0..levels.len() {
+                if j != i {
+                    new_report.push_str(levels[j]);
+                    new_report.push(' ');
+                }
+            }
+
+            if is_report_safe(&new_report) {
+                tolerated_unsafe_reports += 1;
+                break;
+            }
+        }
+    });
+
+    initial_count + tolerated_unsafe_reports
+}
 
 fn is_report_safe(report: &str) -> bool {
     // split the line
