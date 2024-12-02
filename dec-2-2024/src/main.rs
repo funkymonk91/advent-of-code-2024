@@ -17,43 +17,40 @@ fn main() {
 }
 
 fn part1(input: &String) -> u32 {
-    let mut safe_reports: Vec<String> = Vec::new();
-
-    // print the input
-    // println!("{}", input);
-    input.lines().map(|line| {
-        // split the line into numbers
-        let levels: Vec<&str> = line.split_whitespace().collect();
-
-        // check if the line is safe
-        let mut asc = true;
-        let mut is_safe = true;
-
-        for i in 0..levels.len() - 1 {
-            let current = levels[i].parse::<u32>().unwrap();
-            let next = levels[i + 1].parse::<u32>().unwrap();
-            
-            // first, check if all numbers are ascending or descending
-            if(i == 0) {
-                asc = current < next;
-            }
-            else if (asc && current > next) || (!asc && current < next) {
-                is_safe = false;
-            }
-
-            let d = current.abs_diff(next);
-            // ensure that the difference between the two numbers is at least one and at most 3
-            if(d < 1 || d > 3) {
-                is_safe = false;
-            }
-        }
-
-        is_safe
+    input.lines().map(|report| {
+       is_report_safe(report)
     })
     .filter(|&safe| safe)
     .count() as u32
 }
 
-// fn part2(left: &[u32], right: &[u32]) -> u32 {
-//     //   
-// }
+
+fn is_report_safe(report: &str) -> bool {
+    // split the line
+    let levels: Vec<&str> = report.split_whitespace().collect();
+
+    // check if the line is safe
+    let mut asc = true;
+    let mut is_safe = true;
+
+    for i in 0..levels.len() - 1 {
+        let current = levels[i].parse::<u32>().unwrap();
+        let next = levels[i + 1].parse::<u32>().unwrap();
+        
+        // first, check if all numbers are ascending or descending
+        if(i == 0) {
+            asc = current < next;
+        }
+        else if (asc && current > next) || (!asc && current < next) {
+            is_safe = false;
+        }
+
+        let d = current.abs_diff(next);
+        // ensure that the difference between the two numbers is at least one and at most 3
+        if(d < 1 || d > 3) {
+            is_safe = false;
+        }
+    }
+
+    is_safe
+}
