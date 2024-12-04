@@ -11,9 +11,9 @@ fn main() {
     let (duration, result) = time(|| part1(&input));
     println!("Part 1 result: {} (computed in {:?})", result, duration);
 
-    // let (duration, result) = time(|| part2(&input));
-    // println!("Part 2 result: {} (computed in {:?})", result, duration);
-    // println!();
+    let (duration, result) = time(|| part2(&input));
+    println!("Part 2 result: {} (computed in {:?})", result, duration);
+    println!();
 }
 
 fn find_xmas(lines: &Vec<&str>, x: &usize, y: &usize, reverse: bool) -> u32 {
@@ -76,6 +76,41 @@ fn part1(input: &String) -> u32 {
     count
 }
 
-// fn part2(input: &String) -> u32 {   
-    
-// }
+// intentionally poor name
+fn find_x_mas(lines: &Vec<&str>, x: usize, y: usize) -> u32 {
+    if y == 0 || y >= lines.len() - 1 || x == 0 || x >= lines[y].len() - 1 {
+        return 0;
+    }
+
+    // Top-left to bottom-right
+    let tl = lines[y - 1].chars().nth(x - 1).unwrap();
+    let br = lines[y + 1].chars().nth(x + 1).unwrap();
+    // Top-right to bottom-left
+    let tr = lines[y - 1].chars().nth(x + 1).unwrap();
+    let bl = lines[y + 1].chars().nth(x - 1).unwrap();
+
+    let tl_to_br = (tl == 'M' && br == 'S') || (tl == 'S' && br == 'M');
+    let tr_to_bl = (tr == 'M' && bl == 'S') || (tr == 'S' && bl == 'M');
+
+    if tl_to_br && tr_to_bl {
+        1
+    } else {
+        0
+    }
+}
+
+fn part2(input: &String) -> u32 {
+    let lines: Vec<&str> = input.lines().collect();
+    let mut count = 0;
+
+    lines.iter().enumerate().for_each(|(y, line)| {
+        line.chars().enumerate().for_each(|(x, character)| {
+            count += match character {
+                'A' => find_x_mas(&lines, x, y),
+                _ => 0
+            }
+        });
+    });
+
+    count
+}
