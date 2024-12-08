@@ -6,9 +6,9 @@ pub fn read_input(input: &str) -> String {
         .expect("Something went wrong reading the file")
 }
 
-pub fn time<F, R>(f: F) -> (Duration, R)
+pub fn time<F, R>(mut f: F) -> (Duration, R)
 where
-    F: Fn() -> R,
+    F: FnMut() -> R,
 {
     let start = Instant::now();
     let result = f(); // Execute the closure

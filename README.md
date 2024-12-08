@@ -5,4 +5,5 @@
 | Day 3: Mull It Over                    |   ✅   |   ✅   |
 | Day 4: Ceres Search                    |   ✅   |   ✅   |
 | Day 5: Print Queue                     |   ✅   |   ✅   |
+| Day 6: Guard Gallivant                 |   ✅   |        |
 
